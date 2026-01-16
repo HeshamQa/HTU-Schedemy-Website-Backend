@@ -116,8 +116,10 @@ public class UserConfig {
                     Department.ARTIFICIAL_INTELLIGENCE
             );
 
-            List<Courses> coursesList = new ArrayList<>();
-            for (int i = 0; i < courseDepartments.size(); i++) {
+           List<Courses> coursesList = new ArrayList<>();
+            int size = Math.min(courseDepartments.size(),Math.min(courseNames.size(),departments.size()));
+
+            for (int i = 0; i < size; i++) {
                 Courses courses = new Courses();
                 courses.setName(courseNames.get(i));
                 courses.setDepartment(departments.get(i));
