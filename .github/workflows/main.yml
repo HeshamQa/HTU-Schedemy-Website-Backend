@@ -18,7 +18,7 @@ jobs:
         java-version: "17"
 
     - name: Build (Maven)
-      run: mvn -B DskipTests package
+      run: mvn -B -DskipTests package
 
       
     - name: Copy jar to EC2(/opt/myapp)
@@ -35,7 +35,7 @@ jobs:
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        password: ${{ secrets.EC2_SSH_KEY }}
+        key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           set -euo pipefail 
           sudo mkdir -p /opt/myapp /opt/myapp/target
