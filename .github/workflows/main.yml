@@ -30,19 +30,27 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "target/*.jar"
-          target: "/tmp"
+          target: "/opt/myapp"
           strip_components: 1
 
-      - name: Move and Restart Service
+      - name: Rename and Restart Service
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Move from tmp to the final destination and fix ownership
-            sudo mv /tmp/*.jar /opt/myapp/app.jar
-            sudo chown deploy:deploy /opt/myapp/app.jar
+            # الانتقال لمجلد التطبيق
+            cd /opt/myapp
             
-            # Restart the service to pick up the new JAR
+            # البحث عن الملف المرفوع وتغيير اسمه إلى app.jar
+            # نستخدم ls -t لضمان أخذ أحدث ملف jar تم رفعه في حال وجود ملفات قديمة
+            NEWEST_JAR=$(ls -t *.jar | grep -v "app.jar" | head -1)
+            
+            if [ -n "$NEWEST_JAR" ]; then
+              echo "Renaming $NEWEST_JAR to app.jar"
+              mv "$NEWEST_JAR" app.jar
+            fi
+
+            # إعادة تشغيل الخدمة
             sudo systemctl restart myapp.service
